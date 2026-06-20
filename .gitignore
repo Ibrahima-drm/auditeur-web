@@ -1,0 +1,18 @@
+# rapports & parcours générés
+rapport_*/
+parcours_*/
+scenario_*/
+rapports/
+lot_*/
+_*/
+# environnement de l'interface (créé par le lanceur)
+.venv/
+# package zippé prêt à envoyer
+dist/
+# infos perso & sessions (ne jamais committer)
+profil.json
+*storage_state*.json
+session*.json
+# python
+__pycache__/
+*.pyc

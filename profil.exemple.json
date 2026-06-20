@@ -1,0 +1,20 @@
+{
+  "_aide": "Copie ce fichier en profil.json et mets tes vraies infos. profil.json est ignoré par git. Sert à remplir automatiquement les formulaires (et créer un compte avec --soumettre-formulaires).",
+  "prenom": "Ibrahima",
+  "nom": "Diaroumba",
+  "nom_complet": "Ibrahima Diaroumba",
+  "email": "ibrahima+test@example.com",
+  "telephone": "+33600000000",
+  "identifiant": "ibrahima_test",
+  "mot_de_passe": "MotDePasseTest123!",
+  "entreprise": "JusteCV",
+  "adresse": "1 rue de la Paix",
+  "code_postal": "35000",
+  "ville": "Rennes",
+  "pays": "France",
+  "sujet": "Test automatique",
+  "message": "Bonjour, ceci est un message de test envoyé par l'auditeur web.",
+  "champs_personnalises": {
+    "nom_du_champ_exact": "valeur à écrire dans ce champ"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "nom": "IBI Smart School — inscription (DEF)",
+  "url": "https://ibi-smartschool.com/start",
+  "etapes": [
+    {"action": "cliquer", "texte": "Créer mon compte", "decrire": "Choisir « Je suis nouveau »"},
+    {"action": "cliquer", "texte": "Mode Standard", "decrire": "Choisir le mode standard"},
+    {"action": "cliquer", "texte": "Diplôme d'Etudes Fondamentales", "decrire": "Étape 2/11 — choisir l'examen (DEF)"},
+    {"action": "remplir", "placeholder": "Ton prénom", "valeur": "Ibrahima", "decrire": "Étape 3/11 — prénom"},
+    {"action": "cliquer", "texte": "Continuer"},
+    {"action": "remplir", "placeholder": "Ton nom", "valeur": "Diaroumba", "decrire": "Étape 4/11 — nom"},
+    {"action": "cliquer", "texte": "Continuer"},
+    {"action": "remplir", "selecteur": "input[type=date]", "valeur": "2008-05-15", "presser": "Tab", "decrire": "Étape 5/11 — date de naissance (valide, dans la plage 2000–2012)"},
+    {"action": "verifier", "bouton_actif": "Continuer", "decrire": "🔎 BUG ATTENDU : le bouton « Continuer » devrait s'activer après une date valide"},
+    {"action": "cliquer", "texte": "Continuer", "decrire": "Passer à l'étape suivante"},
+    {"action": "capture", "decrire": "Étape 6/11"}
+  ]
+}

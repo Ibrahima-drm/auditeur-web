@@ -1,0 +1,6 @@
+# Auditeur web — dépendances
+playwright>=1.40
+# axe-core embarqué pour l'accessibilité (optionnel : sinon récupéré via CDN)
+axe-playwright-python>=0.1.4
+# interface web locale (bouton « Lancer l'auditeur »)
+flask>=3.0

@@ -1,0 +1,19 @@
+{
+  "nom": "Exemple — parcours d'inscription",
+  "url": "https://localhost:3000/inscription",
+  "profil": "profil.json",
+  "_aide": "Décris ton parcours étape par étape. L'outil rejoue tout et s'arrête en te disant où ça casse. Actions possibles : cliquer, remplir, choisir, cocher, presser, attendre, verifier, capture, aller.",
+  "etapes": [
+    {"action": "cliquer", "texte": "Créer mon compte", "decrire": "Ouvrir le formulaire d'inscription"},
+    {"action": "remplir", "placeholder": "Prénom", "profil": "prenom"},
+    {"action": "remplir", "placeholder": "Nom", "profil": "nom"},
+    {"action": "remplir", "selecteur": "input[type=email]", "profil": "email"},
+    {"action": "remplir", "selecteur": "input[type=password]", "profil": "mot_de_passe"},
+    {"action": "choisir", "selecteur": "select[name=pays]", "valeur": "Mali"},
+    {"action": "cocher", "selecteur": "input[name=cgu]", "decrire": "Accepter les conditions"},
+    {"action": "verifier", "bouton_actif": "S'inscrire", "decrire": "Le bouton doit être actif une fois tout rempli"},
+    {"action": "cliquer", "texte": "S'inscrire"},
+    {"action": "attendre", "ms": 2000},
+    {"action": "verifier", "url_contient": "/bienvenue", "decrire": "On doit arriver sur la page de bienvenue"}
+  ]
+}

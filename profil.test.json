@@ -1,0 +1,18 @@
+{
+  "_aide": "Profil de TEST neutre (fausses infos) utilisé automatiquement par l'interface pour remplir les formulaires SANS les soumettre. Aucune donnée personnelle réelle. Tu peux modifier ces valeurs si tu veux, ce n'est pas obligatoire.",
+  "prenom": "Test",
+  "nom": "Utilisateur",
+  "nom_complet": "Test Utilisateur",
+  "email": "test.utilisateur@exemple.fr",
+  "telephone": "+33600000000",
+  "identifiant": "test_utilisateur",
+  "mot_de_passe": "MotDePasseTest123!",
+  "entreprise": "Société de test",
+  "adresse": "1 rue de l'Exemple",
+  "code_postal": "75001",
+  "ville": "Paris",
+  "pays": "France",
+  "sujet": "Message de test automatique",
+  "message": "Bonjour, ceci est un message de test généré automatiquement par l'auditeur web (non destiné à être envoyé).",
+  "champs_personnalises": {}
+}

@@ -1,0 +1,16 @@
+# Fins de ligne verrouillées par plateforme cible.
+* text=auto
+
+# Lanceur Windows : DOIT rester en CRLF (sinon cmd.exe plante au double-clic).
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Lanceur Mac/Linux : DOIT rester en LF.
+*.command text eol=lf
+*.sh       text eol=lf
+
+# Sources et données : LF.
+*.py   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
