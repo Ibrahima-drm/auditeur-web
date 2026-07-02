@@ -119,6 +119,7 @@ PAGE = r"""<!DOCTYPE html>
       <span class="opt"><input id="mobile" type="checkbox"> Vue mobile</span>
       <span class="opt"><input id="lent" type="checkbox"> Connexion lente (3G)</span>
       <span class="opt"><input id="parcours" type="checkbox" checked> Explorer les parcours automatiquement (inscription, formulaires…)</span>
+      <span class="opt"><input id="client" type="checkbox"> Rapport client (diagnostic sans jargon, à envoyer au commerçant)</span>
     </div>
     <button id="go">Lancer l'audit</button>
 
@@ -128,6 +129,7 @@ PAGE = r"""<!DOCTYPE html>
     </div>
     <div class="fini" id="fini">
       <a id="lienRapport" href="#" target="_blank">📄 Ouvrir le rapport</a>
+      <a id="lienClient" href="#" target="_blank" style="display:none;margin-left:10px;background:var(--acc);color:#06121f">🤝 Rapport client</a>
       <div class="doux" style="margin-top:10px"><a href="#" id="recommencer" style="color:var(--acc)">↻ Tester un autre site</a></div>
     </div>
   </div>
@@ -154,6 +156,7 @@ function lancer() {
     mobile: $('mobile').checked ? '1' : '0',
     lent: $('lent').checked ? '1' : '0',
     auto: $('parcours').checked ? '1' : '0',
+    client: $('client').checked ? '1' : '0',
   });
   source = new EventSource('/auditer?' + p.toString());
   source.onmessage = e => {
@@ -167,6 +170,8 @@ function lancer() {
       if (d.rapport) {
         etat.textContent = '✅ Audit terminé !'; etat.className = 'ok';
         $('lienRapport').href = d.rapport; fini.style.display = 'block';
+        if (d.client) { $('lienClient').href = d.client; $('lienClient').style.display = 'inline-block'; }
+        else { $('lienClient').style.display = 'none'; }
         window.open(d.rapport, '_blank');
       } else {
         etat.textContent = '❌ ' + (d.erreur || "L'audit a échoué. Vérifie l'adresse.");
@@ -220,6 +225,7 @@ def auditer():
     mobile = request.args.get("mobile") == "1"
     lent = request.args.get("lent") == "1"
     auto = request.args.get("auto", "1") == "1"
+    client = request.args.get("client") == "1"
 
     dossier = RAPPORTS / _slug(url)
     cmd = [sys.executable, "-u", str(AUDITEUR), url,
@@ -228,6 +234,8 @@ def auditer():
         cmd.append("--mobile")
     if lent:
         cmd.append("--lent")
+    if client:
+        cmd.append("--client")  # coordonnées : prestataire.json à la racine, s'il existe
     # Profil pour remplir les formulaires (jamais soumis depuis l'interface) :
     # le profil perso s'il existe, sinon le profil de test neutre livré avec l'outil.
     for nom_profil in ("profil.json", "profil.test.json"):
@@ -273,7 +281,10 @@ def auditer():
                       if (dossier / nom).is_file()), None)
         if cible:
             rel = "/rapports/" + dossier.name + "/" + cible
-            yield "data: " + json.dumps({"fini": True, "rapport": rel}) + "\n\n"
+            fin = {"fini": True, "rapport": rel}
+            if (dossier / "rapport-client.html").is_file():
+                fin["client"] = "/rapports/" + dossier.name + "/rapport-client.html"
+            yield "data: " + json.dumps(fin) + "\n\n"
         else:
             yield "data: " + json.dumps({
                 "fini": True,

@@ -11,6 +11,7 @@ _*/
 dist/
 # infos perso & sessions (ne jamais committer)
 profil.json
+prestataire.json
 *storage_state*.json
 session*.json
 # python

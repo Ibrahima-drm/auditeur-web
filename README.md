@@ -59,7 +59,35 @@ python auditeur.py https://monsite.com --mobile --lent
 
 # site qui demande une connexion (session Playwright sauvegardée)
 python auditeur.py https://monsite.com --auth storage_state.json
+
+# rapport CLIENT en plus (diagnostic commercial, voir plus bas)
+python auditeur.py https://monsite.com --client
 ```
+
+## Rapport client (prospection freelance)
+
+`--client` génère **`rapport-client.html`** en plus du rapport technique : un
+diagnostic **sans jargon**, pensé pour être envoyé tel quel à un commerçant /
+artisan. Chaque constat technique y est traduit en conséquence concrète
+(« visiteurs perdus », « Google vous classe moins bien », « perte de
+confiance »), avec une note globale, l'essentiel en 3 points, les priorités,
+la capture de la page d'accueil **incluse dans le fichier** (autonome, s'envoie
+par email) et un bloc contact. Il s'imprime proprement en PDF (Ctrl+P).
+
+```bash
+# audit + rapport client (coordonnées lues dans prestataire.json s'il existe)
+python auditeur.py https://commerce.fr --client
+
+# coordonnées explicites
+python auditeur.py https://commerce.fr --client --prestataire moi.json
+
+# (re)générer SEULEMENT le rapport client depuis un audit déjà fait (sans re-crawler)
+python auditeur.py --client-depuis rapport_commerce.fr_20260702_1010/rapport.json
+```
+
+Copie `prestataire.exemple.json` en `prestataire.json` avec tes coordonnées
+(nom, titre, email, téléphone, site) — ignoré par git. L'interface web propose
+aussi une case « **Rapport client** ».
 
 ## Tester les formulaires avec tes vraies infos (et créer un compte)
 
@@ -105,6 +133,9 @@ de passe sont **masqués** dans le rapport.
 | `--soumettre-formulaires` | ⚠️ soumet **réellement** les formulaires |
 | `--auth fichier.json` | charge une session connectée (`storage_state`) |
 | `--sortie DOSSIER` | dossier de sortie |
+| `--client` | génère aussi `rapport-client.html` (diagnostic commercial sans jargon) |
+| `--prestataire F.json` | coordonnées affichées dans le rapport client (défaut : `prestataire.json`) |
+| `--client-depuis R.json` | régénère le rapport client depuis un `rapport.json` existant |
 
 ## Ce qui est testé
 
@@ -185,9 +216,10 @@ Actions disponibles : `aller`, `cliquer` (par `texte` ou `selecteur`), `remplir`
 
 ```
 rapport_<domaine>_<date>/
-├── rapport.json     # toutes les données brutes
-├── rapport.html     # rapport lisible avec scores et problèmes priorisés
-└── captures/        # captures pleine page de chaque URL
+├── rapport.json         # toutes les données brutes
+├── rapport.html         # rapport lisible avec scores et problèmes priorisés
+├── rapport-client.html  # (avec --client) diagnostic commercial autonome
+└── captures/            # captures pleine page de chaque URL
 ```
 
 ## Score

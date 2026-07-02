@@ -50,6 +50,8 @@ try:
 except ImportError:
     sys.exit("❌ Playwright manquant. Installe-le :  pip install playwright  puis  playwright install chromium")
 
+from rapport_client import generer_rapport_client
+
 
 # ============================================================
 #  CONSTANTES
@@ -562,6 +564,8 @@ class Config:
     storage_state: str | None = None
     dossier: Path = field(default_factory=lambda: Path("."))
     familles: set = field(default_factory=lambda: set(CATEGORIES + ["liens", "formulaires"]))
+    client: bool = False          # génère AUSSI rapport-client.html (diagnostic commercial)
+    prestataire: dict = None      # coordonnées affichées dans le rapport client
 
 
 # ============================================================
@@ -2566,7 +2570,43 @@ def parser_args() -> Config:
     ap.add_argument("--exclure", help="regex : ignorer les URLs qui matchent")
     ap.add_argument("--auth", help="fichier storage_state.json (session connectée Playwright)")
     ap.add_argument("--sortie", help="dossier de sortie (défaut: rapport_<domaine>_<date>)")
+    ap.add_argument("--client", action="store_true",
+                    help="génère AUSSI rapport-client.html : diagnostic commercial sans jargon, "
+                         "autonome (capture incluse), à envoyer tel quel à un commerçant")
+    ap.add_argument("--prestataire", metavar="FICHIER.json",
+                    help="coordonnées affichées dans le rapport client (nom, email, telephone, site, titre). "
+                         "Défaut : prestataire.json à côté du script, s'il existe")
+    ap.add_argument("--client-depuis", metavar="RAPPORT.json",
+                    help="(re)génère uniquement le rapport client depuis un rapport.json existant, sans re-crawler")
     a = ap.parse_args()
+
+    # coordonnées du prestataire pour le rapport client (explicite, sinon prestataire.json local)
+    prestataire = None
+    if a.client or a.client_depuis:
+        chemin_p = Path(a.prestataire) if a.prestataire else Path(__file__).resolve().parent / "prestataire.json"
+        if a.prestataire and not chemin_p.is_file():
+            ap.error(f"--prestataire : fichier introuvable : {a.prestataire}")
+        if chemin_p.is_file():
+            try:
+                prestataire = json.loads(chemin_p.read_text(encoding="utf-8"))
+                if not isinstance(prestataire, dict):
+                    raise ValueError("doit être un objet JSON")
+            except Exception as e:
+                ap.error(f"prestataire : JSON invalide ({chemin_p}) : {e}")
+
+    # --- Mode régénération : rapport client seul, depuis un rapport.json déjà produit ---
+    if a.client_depuis:
+        src = Path(a.client_depuis)
+        if not src.is_file():
+            ap.error(f"--client-depuis : fichier introuvable : {a.client_depuis}")
+        try:
+            rapport = json.loads(src.read_text(encoding="utf-8"))
+        except Exception as e:
+            ap.error(f"--client-depuis : JSON invalide : {e}")
+        cible = src.parent / "rapport-client.html"
+        generer_rapport_client(rapport, cible, prestataire, dossier=src.parent)
+        print(f"🤝 Rapport client : {cible}")
+        sys.exit(0)
 
     # mode scénario : charge le ou les fichiers de parcours
     scenarios = []
@@ -2658,6 +2698,7 @@ def parser_args() -> Config:
         lent=a.lent, gerer_cookies=not a.garder_cookies,
         inclure=inclure, exclure=exclure, storage_state=a.auth,
         dossier=dossier, familles=familles,
+        client=a.client, prestataire=prestataire,
     )
 
 
@@ -2766,9 +2807,14 @@ async def executer_audit(cfg) -> dict:
     (cfg.dossier / "rapport.json").write_text(
         json.dumps(rapport, ensure_ascii=False, indent=2), encoding="utf-8")
     generer_html(rapport, cfg.dossier / "rapport.html")
+    if cfg.client:
+        generer_rapport_client(rapport, cfg.dossier / "rapport-client.html",
+                               cfg.prestataire, dossier=cfg.dossier)
     afficher_resume(rapport)
     print(f"\n📄 JSON : {cfg.dossier / 'rapport.json'}")
     print(f"🌐 HTML : {cfg.dossier / 'rapport.html'}")
+    if cfg.client:
+        print(f"🤝 Rapport client : {cfg.dossier / 'rapport-client.html'}")
     print(f"📸 Captures : {cfg.dossier / 'captures'}/")
     return rapport
 
