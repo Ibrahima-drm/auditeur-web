@@ -752,11 +752,12 @@ class Auditeur:
                         urls_sitemap.append(ligne.split(":", 1)[1].strip())
         except Exception:
             pass
-        if not urls_sitemap:
-            urls_sitemap = [urljoin(base, "/sitemap.xml"), urljoin(racine, "/sitemap_index.xml")]
+        # les emplacements standards restent testés même si robots.txt déclare un
+        # sitemap injoignable (autre domaine, prod depuis un audit localhost…)
+        urls_sitemap += [urljoin(base, "/sitemap.xml"), urljoin(racine, "/sitemap_index.xml")]
         info["sitemap"] = False
         vus_sm = set()
-        for sm in urls_sitemap[:3]:
+        for sm in urls_sitemap[:4]:
             if sm in vus_sm:
                 continue
             vus_sm.add(sm)
@@ -1048,6 +1049,9 @@ class Auditeur:
                     "description": v["description"],
                     "aide": v.get("help"),
                     "noeuds": len(v.get("nodes", [])),
+                    # sélecteurs des premiers éléments fautifs : indispensable pour corriger
+                    "cibles": [", ".join(n.get("target", []))
+                               for n in v.get("nodes", [])[:4]],
                 } for v in axe.get("violations", [])]
             else:
                 out["axe_violations"] = None
@@ -1510,7 +1514,8 @@ def detecter_problemes(res: dict) -> list[dict]:
         imp_sev = {"critical": CRITIQUE, "serious": MAJEUR, "moderate": MINEUR, "minor": INFO}
         for v in (a11y.get("axe_violations") or []):
             add("accessibilite", imp_sev.get(v["impact"], MINEUR),
-                f"axe[{v['impact']}] {v['id']} — {v['description']} ({v['noeuds']} él.)")
+                f"axe[{v['impact']}] {v['id']} — {v['description']} ({v['noeuds']} él.)",
+                details=v.get("cibles") or [])
 
     # zoom bloqué = barrière d'accessibilité majeure (malvoyants)
     if head.get("zoom_bloque"):
